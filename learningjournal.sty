@@ -1,0 +1,106 @@
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{Learningjournal}[2019/09/02 Package to assist my making a learning journal]
+
+%https://en.wikibooks.org/wiki/LaTeX/Creating_Packages
+
+\ProcessOptions\relax
+
+\RequirePackage{lipsum}
+\RequirePackage{cleveref}
+%https://www.overleaf.com/learn/latex/Paragraph_formatting#Paragraph_spacing
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[english]{babel}
+
+\RequirePackage{hyperref}
+\RequirePackage[colorlinks=true,linkcolor=blue]{hyperref}
+
+% https://tex.stackexchange.com/a/418302/5482
+\RequirePackage{crossreftools}
+
+\newcommand{\includelabelintoc}{Error: }
+% https://tex.stackexchange.com/a/436076/5483
+\RequirePackage{tocloft}
+\advance\cftsecnumwidth 0.5em\relax
+\advance\cftsubsecindent 0.5em\relax
+\advance\cftsubsecnumwidth 0.5em\relax
+
+
+
+
+% Via Billy on the #latex channel:
+% Is there a way to store template in the file so I can just press like, \error to bring up my error template?
+% Because atm I always go back to the last error and copy-paste everything, then edit the lines out and replace them
+% I had a look at using \newcommand but I can't see how I could input information into it once it compiles - I need something that pastes a whole bunch of code into the source code
+% \newcommand{\error}{\subsubsection{\texorpdfstring{\underline{Error: ___}}{}}\label{error:er__}
+% \begin{itemize}
+%   \item
+% \end{itemize}
+% \begin{itemize}
+% \renewcommand{\labelitemi}{}
+% \item \underline{Solution:}
+% \renewcommand{\labelitemi}{$\bullet$}
+%   \item Intention:
+%   Action:
+%   Result:
+% \end{itemize}}
+% I suppose I could keep it handy as $comments, but I'd still have to manually delete the dollar sign from every line...
+
+    % https://en.wikibooks.org/wiki/LaTeX/Macros
+% \newcommand{\name}[num]{definition}
+
+% https://tex.stackexchange.com/a/36611/5483
+% https://tex.stackexchange.com/a/123593/5483
+\RequirePackage[explicit]{titlesec}
+\RequirePackage{ulem}
+\titleformat{\subsubsection}
+  {\normalfont\large\itshape}{\thesubsubsection}{1em}{\uline{#1}} %make sure the subsub matches.
+
+
+
+
+\newcommand{\itemizederror}[2]{%
+\subsubsection{\includelabelintoc #1} % instead of hardcoding formatting in here, I adjust the subsubsection formatting in general. Obviously, if we want to signal different categories of subsection, we can move the global back into here.
+% instead of hard-coding the error prompt, I pull it from above, so the change is consistent
+\label{\includelabelintoc #1}
+\begin{itemize} % I'm not putting \item here to support multiple bullets in the error definition.
+    #2 
+\end{itemize}
+}
+
+\newcommand{\solution}[4]{%
+\subsubsection{Solution}
+% https://en.wikibooks.org/wiki/LaTeX/List_Structures We want to use a descriptive list here.
+\begin{description}
+    \item [] #1
+    \item [Intention:] #2
+    \item [Action:] #3
+    \item [Result:] #4
+\end{description}
+}
+
+% so the list has a pretty name
+\renewcommand
+\listoflabelsname{List of Errors}
+
+
+\newcommand{\tablesofcontentsanderrors}{%
+\tableofcontents
+
+% If we're using subsub sections, we need to redefine (AFTER we run the ToC command)
+\advance\cftsecnumwidth 1em\relax
+
+
+% Hack to do single-line skipping in list of errors
+\setlength{\parskip}{-1em}
+
+\crtlistoflabels
+
+
+% We change parskip *after* create list of labels...
+
+%This sets the indent length of a paragraph 
+\setlength{\parindent}{0em}
+
+%This sets the whitespace between paragraphs
+\setlength{\parskip}{1em}
+}

@@ -1,0 +1,161 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{wasysym}
+\usepackage[a4paper, margin=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{CJKutf8}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,
+            linkcolor=blue,
+            filecolor=magenta,      
+            urlcolor=cyan,}
+\urlstyle{same}
+
+\title{\textbf{Proof of Concept - Elaboration I: Planning}}
+\date{29 Aug 2019}
+\author{William Black 42920477}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+
+\begin{document}
+\maketitle{\underline{\textbf{\Large{Six Duties of a Focus Frame Robot}}}}
+
+\section{\large Works in TeX compilers.}
+
+The rationale for this is that I have recently learnt that .tex documents work with all kinds of compilers so the robot won't be at the mercy of any paid software, company, or specific version of document editor.
+
+\section{\large Frames document based on LaTeX sectioning.}
+
+Although the original aim was to create nested sections like a sort of tree with boughs, branches and twigs, \href{https://www.overleaf.com/learn/latex/Sections_and_chapters#Document_Sectioning}{the sectioning system} native to LaTeX is already perfectly suitable for this purpose.
+
+\section{\large Frame elements are formatted to be grey and bold.}
+
+First, it must be seen that formatting and coding can be attached to sectioning. \href{https://www.overleaf.com/learn/latex/Sections_and_chapters#Customize_chapters_and_sections}{This tutorial} would seem to show that the sectioning system can be formatted, and that code can be attached to the system with the \texttt{titlesec} package.
+
+\section{\large Each sub/sub/section allows addition of a word count goal.}
+
+There's a \href{https://www.overleaf.com/learn/how-to/Is_there_a_way_to_run_a_word_count_that_doesn\%27t_include_LaTeX_commands\%3F}{word count tool} already built in to Overleaf that excludes LaTeX commands, so at least this is theoretically possible.
+
+There is also a \href{https://app.uio.no/ifi/texcount/}{Perl script} that counts words. A Perl script is a type of programming language that is considered easier to learn than others and works well with UNIX facilities. (Rouse, 2017)
+
+There is also \href{https://tex.stackexchange.com/questions/44618/dynamically-count-and-return-number-of-words-in-a-section}{this tutorial} that implies that extracting a subcount for a specific section is possible through the \texttt{texcount} package.
+
+
+\section{\large Frames can be toggled on/off} 
+
+Presumably you can just break the code and it stops working, but that doesn't necessarily mean there won't be undesirable consequences like broken code displaying in the document.
+
+One solution might be to add percentage marks to the frames so they become comments and neither function as code nor appear in the document, although this might be annoying to scroll through code and insert them for long documents with dozens of sections. \href{https://vim.fandom.com/wiki/Inserting_text_in_multiple_lines}{Here} is a solution to that where I can apply markers to multiple lines at once, if I choose to use an editor called Vim as my LaTeX editor.
+
+In order to apply \textit{commands} to several parts of a document at once, I may need to create a \href{https://en.wikibooks.org/wiki/LaTeX/Macros}{macro}. It looks like by using \textbackslash newcommand\{\} I will be able to apply any a command to marked points I've prepared in advance throughout the document.
+
+\section{\large Word count is updated with each recompile, turning blue within ten percent of goal, orange within twenty percent of goal, and red when more than thirty percent over.}
+
+It seems like it's at least possible to keep a running count of words in sections that updates with each recompile with a macro, based on an example \href{https://tex.stackexchange.com/a/44626}{seen here}.
+
+LaTeX has an option to use \href{https://en.wikibooks.org/wiki/LaTeX/Macros#Conditionals}{conditionals} with an \texttt{ifthen} package. \href{https://tex.stackexchange.com/questions/13866/why-is-the-ifthen-package-obsolete}{A stackexchange post} talks about this package being obsolete with more modern options being available such as \href{https://ctan.org/pkg/etoolbox}{etoolbox}.
+
+\vspace{1em}
+\section*{\underline{\Large{\textbf{Testing:}}}}
+
+\subsection*{Formatting Tests}
+
+After creating a dummy document with lorem ipsum, the first thing to test is applying code to the sectioning system in the first place. The easiest way may be creating a macro. 
+
+\vspace{0.5em}
+\underline{Test A: (Testing Duties 1, 2, 3, 6)}
+
+Format any LaTeX section label to be grey and bold.
+
+If this fails, a user-created sectioning system will need to be created to have better control over formatting.
+
+$\downarrow$
+
+\underline{Test B: (Testing Duties 1, 2, 3, 4, 6)}
+
+Create macro that applies that formatting to all section headings.
+
+This might look something roughly like 
+\begin{verbatim}
+    \newcommand{\framesect}[1]{\section{\insertformattinghere{#1}}}
+    \begin{document}
+    \framesect{Introduction}
+\end{verbatim}
+
+If this fails due to incompatibility with the native sectioning system, a user-created sectioning system may need to be created.
+
+If this fails due to my own weakness of skill, I will need to turn to further resources and guidance supporting macro creation. It may be necessary to follow a completely new route with a different editor, environment, or coding language.
+
+$\downarrow$
+
+\underline{Test C: (Testing Duties 1, 2, 3, 6)}
+
+Apply macro to all labels; sections, subsections, subsubsections.
+
+If this fails, possibly multiple macros will need to be made to cover the different duties required of sections vs subsubsections, for instance, a different macro may need to be created for those sections where the heading is forbidden from being toggled off, and must appear in the final document.
+
+If multiple macros cannot co-exist peacefully or time constraints do not allow completion, a manual solution can be used, for instance, inserting permanent headings after the writing process is finished.
+
+\vspace{2em}
+\subsection*{Word Count Tests}
+
+Assuming the formatting tests went smoothly, the process should be mostly repeatable or even extended to the requirements of word counting. If a macro was unable to be created, these tests should still apply to whatever process was used as an alternative.
+
+\underline{Test A: (Testing Duties 1, 2, 3, 4)}
+
+Add word count goal to formatting macro.
+
+This should only require one extra element to type at each sectioning label, with an option to not specify word count goal.
+
+If this fails, a separate macro may have to be created.
+
+$\downarrow$
+
+\underline{Test B: (Testing Duties 1, 2, 4)}
+
+Extract a subcount of words for one section using a \texttt{texcount} macro.
+
+If this fails, other macros can be tested.
+
+If all macros fail, a different TeX environment like ConTeXt or LuaTeX may need to be considered, or possibly a different coding language. 
+
+$\downarrow$
+
+\underline{Test C: (Testing Duties 1, 2, 4, 6)}
+
+Test subcount strategy on all levels of sectioning. At each recompile, word counter should be able to return updated results for entire dummy document, each section, each subsection, etc.
+
+If this fails, separate word counts may need to be created to deal with each level of sectioning.
+
+\vspace{2em}
+\subsection*{Changing Frame Tests}
+
+Elements of the focus frame are supposed to change automatically and with user input.
+
+\underline{Test A: (Testing Duties 1, 2, 4, 6)}
+
+Extract subcount from section, and where subcount is with ten percent of section word count goal, turn word count from grey to blue using etoolbox.
+
+If no success with etoolbox, other packages like \texttt{ifthen} may be simpler to make, even if not as powerful.
+
+Any solution that passes this test should be replicatable for orange and red counts with their conditions.
+
+\vspace{1em}
+\underline{Test B: (Testing Duties 1, 5)}
+
+Create toggle for the macro/process.
+
+This should be the easiest part, it seems that every version of these scripts has an ability to simply say `fframe\=true' somewhere.
+
+If this test fails, a manual solution to turning it off can be found by entering \% marks on coded lines, or simply deleting the code.
+
+
+
+
+\vspace{3em}
+\section*{\underline{\textbf{\Large References:}}}
+
+Rouse, M. (2017). What is Perl? - Definition from WhatIs.com. Retrieved 29 August 2019, from https://whatis.techtarget.com/definition/Perl
+
+\end{document}

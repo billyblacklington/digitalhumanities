@@ -1,0 +1,65 @@
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{focusframe}[2019/10/08 Temporary grey frames with word count]
+
+\ProcessOptions\relax
+
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{wasysym}
+\usepackage[a4paper, margin=2cm]{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{graphicx}
+\graphicspath{ {./} }
+\usepackage{scrextend}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{lipsum}
+\pagestyle{fancy}
+\fancyhf{}
+
+\rfoot{Page \thepage \hspace{1pt} of \pageref{LastPage}}
+\setcounter{secnumdepth}{1}
+
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,
+            linkcolor=blue,
+            filecolor=magenta,      
+            urlcolor=cyan,}
+\urlstyle{same}
+
+
+% Using instructions from https://en.wikibooks.org/wiki/LaTeX/Macros
+% Usage: \newcommand{\name}[num]{definition}
+
+%#1 is section name, #2 is count 
+% \newcommand{\frsect}[2]{%
+%     \vspace{1em}\section{#1\textcolor{gray}{\getsectioncount{#1}{#2}}%
+%     }
+
+
+
+% \newcommand{\frsubsect}[2]{\vspace{-2.5em}\textcolor{gray}{\subsection{\textbf{#1}  {#2}}}}
+
+% \newcommand{\frsubsubsect}[2]{\vspace{-1.5em}\textcolor{gray}{\subsubsection{\textbf{#1}  \textcolor{gray}{#2}\texorpdfstring{\vspace{-0.5em}}{}}}}
+
+
+
+
+
+\endinput
+
+% Using instructions from https://www.overleaf.com/learn/how-to/Is_there_a_way_to_run_a_word_count_that_doesn't_include_LaTeX_commands%3F
+% \newcommand{\detailtexcount}[1]{%
+%   \immediate\write18{texcount -merge -sum -q #1.tex output.bbl > #1.wcdetail }%
+%   \verbatiminput{#1.wcdetail}%
+% }
+ 
+% \newcommand{\quickwordcount}[1]{%
+%   \immediate\write18{texcount -1 -sum -merge -q #1.tex output.bbl > #1-words.sum }%
+%   \input{#1-words.sum} words%
+% }
+ 
+% \newcommand{\quickcharcount}[1]{%
+%   \immediate\write18{texcount -1 -sum -merge -char -q #1.tex output.bbl > #1-chars.sum }%
+%   \input{#1-chars.sum} characters (not including spaces)%
+% }

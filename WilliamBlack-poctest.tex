@@ -1,0 +1,259 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{currfile}
+
+
+
+\usepackage{marginnote}
+% Just in case you want wordcount in margins.
+
+\usepackage{focusframe}
+\usepackage{verbatim}
+
+
+% \newcommand{\echofromshell}[1]{%
+%     %Write output of command into file
+%     \immediate\write18{echo "hello world #1">test.tex}
+%     \immediate\write18{ls *.tex >> test.tex}
+%     \input{test.tex}
+% }
+
+\edef\xjobname{WilliamBlack-poctest}
+
+        %%% TITLE %%%
+
+    % Writes texcount package of current file to file called "texcou.nt"
+    % #1 is current file name
+\newcommand{\texfile}{\immediate\write18{texcount -sum -subcount=none \xjobname.tex > texcou.nt}}
+    
+    % Looks for the line containing "Sum" in textcou.nt, writes that line to file called "filecou.nt"
+    % Cuts the second field (using : as a delimiter) to find the number only, and write it to a file called "cleancou.nt"
+\newcommand{\getfile}{%
+\texfile
+\immediate\write18{grep "Sum" texcou.nt > filecou.nt}
+\immediate\write18{cut -d : -f 2 filecou.nt > cleancou.nt}
+}
+
+    % Writes total current wordcount out of wordcount goal
+    % #1 is wordcount goal
+\newcommand{\frfile}[1]{%
+\textcolor{gray}{\getfile\input{cleancou.nt}/ #1 words}
+}
+
+        %%% SECTION %%%
+        
+    % Writes texcount package of current file to file called "texcou.nt"        
+    % #1 is current file name
+\newcommand{\texsect}{%
+\immediate\write18{texcount -sum -subcount=frsect \xjobname.tex > secttexcou.nt}
+    
+    %DEBUG
+    
+    %Tex Section Count:
+    %\input{secttexcou.nt}    
+    
+    
+    %Error. File not appearing. This suggests that texcount isn't running correctly. File appears in "other logs and files" though.
+
+    % Ok, finally figured out the issue. It really wants the word section at line 146. Thus, how do we get texcount to find that word, while using a macro... (which was indeed your question to me)
+    
+    % Page 4 of the documentation might have a useful thing
+    % Intention: Experiment with subst to pattern match
+    
+    
+}
+    
+% Action: Break out of the command, since we're now giving instructions to texcount
+
+
+%TC:subst \frsect \section
+
+
+% Result: It... works?
+% Error: It works *once*. Wait, no. Error. a 9 looks like a 0. Fix: zoom in, brian.
+
+
+    % Looks for the line containing section name in textcou.nt, writes that line to file called "sectcou.nt"
+    % Cuts the first field (using + as a delimiter) to find the number only, and write it to a file called "cleancou.nt"
+    % #1 is section name
+\newcommand{\getsect}[1]{%
+    \texsect
+    \immediate\write18{grep "#1" secttexcou.nt > sectcou.nt}
+    \immediate\write18{cut -d + -f 1 sectcou.nt > cleancou.nt}
+    
+    %Debug
+    
+    
+    
+    % \begin{verbatim}
+    
+    %Input: "#1"
+    
+    % texcount
+    
+    % \input{sectexcou.nt}
+    
+    % sectcount
+    % % % Ok, first bug discovered, it's not writing out sectcount.    
+    % \input{sectcou.nt}
+    
+    % cleancount
+    
+    % \input{cleancou.nt}
+    
+    % \end{verbatim}
+    
+    
+    
+    
+    
+    
+    
+} %It helps to see when the command ends. I was just about to think it continued below
+
+
+
+    % Writes current subcount out of section wordcount goal
+    % #1 is section name, #2 is wordcount goal
+\newcommand{\frsect}[2]{\section{#1}%The benefit of this is that your wordcount doesn't contaminate your section title.
+% Square brackets for left. curly braces for right. second arg is note voffset
+\marginnote{
+\getsect{#1}\textcolor{gray}{\input{cleancou.nt}/ #2 words}
+}[-2cm]
+
+}
+% REmoving debug unmargin.
+    
+        %%% SUBSECTION %%%
+        
+\newcommand{\texsubsect}{\immediate\write18{texcount -sum -subcount=subsection \xjobname.tex > texcou.nt}}     
+\newcommand{\getsubsect}[1]{\texsubsect
+    \immediate\write18{grep "#1" texcou.nt > sectcou.nt}
+    \immediate\write18{cut -d + -f 1 sectcou.nt > cleancou.nt}}
+    
+\newcommand{\presubsect}[1]{\subsection*{\hphantom{#1}}}
+
+\newcommand{\frsubsect}[2]{%
+\subsection{#1}
+\marginnote{%
+\textcolor{gray}{\textcolor{gray}{\getsubsect{#1}\input{cleancou.nt}/ #2 words}}
+}[-1cm]
+} %This also needs a tc invocation
+
+%TC:subst \frsubsect \subsection
+
+
+%\newcommand{\frsubsect}[2]{\presubsect\thesubsect{#1}{#2}}
+
+%    \vspace{-2em}\frsubsect{#1}{#2}}
+
+
+\title{Animation Translation of the Japanese Nation} %Bold doesn't change formatting of title that I can see.
+\date{Date of last edit: \today}
+\author{William Black 42920477}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+
+\begin{document}
+
+
+\tableofcontents
+
+\textbf{\maketitle} % You've bolded it here
+\marginnote{\frfile{3000}}[-3cm]
+
+
+
+\frsect{Background and Literature Review}{400}
+
+%\section{Background and Literature Review}
+% Ok, I see what the error is. Texcount *really* wants the literal word section right here, otherwise it doesn't wordcount correctly. 
+
+
+% \vspace{-4em}\section*{\hphantom{Background and Literature Review}}
+% \frsect{Background and Literature Review}{400}
+
+Here is a few sentences for the frame to count. This is the background of the subject. It includes a literature reviews. Literature reviews are possibly my least favourite part of writing research.
+
+
+
+
+% \vspace{-4em}\section*{\hphantom{Second Section}}
+\frsect{Second Section}{400}
+
+
+We do need two sections to test with... 
+Adding words because I'm bloody blind.
+
+% \subsection*{\hphantom{Leading Paragraph}}
+% \vspace{-2em}\frsubsect{Leading Paragraph}{100}
+
+\frsubsect{Leading Paragraph}{100}
+
+Translation is a tricky business, you see, ever since time immemorial translators have wondered etc. Here is more text for a leading paragraph. Why on earth does the header appear twice in this paragraph? No one knows, it is an enigma.
+
+
+
+% \vspace{-3em}\subsection*{\hphantom{Header}}
+
+% \frsubsect{Header}{300}
+
+% The number of words in this section should be twelve.
+
+
+
+% \vspace{-3em}\section*{\hphantom{Explanatory Section}}
+
+% \frsect{Explanatory Section}{500}
+% The reason the subcount is 64 instead of 61, a couple of extra words on top of the main text in the section, is because the subcount includes the words in the heading of the section and the number of the section. This doesn't need to be fixed, as words in the header do usually count as words in the document.
+
+
+
+
+% \vspace{-3em}\section*{\hphantom{Test Section}}
+
+% \frsect{Test Section}{300}
+
+% \subsection*{\hphantom{Test Subsection}}
+% \vspace{-2em}\frsubsect{Test Subsection}{150}
+
+% asdf asdf asdf. why would it work on sections and then not work on subsections. Oh well it seems to be working now. Oh I see, it's counting the number of the subsection too, even though the number is invisible to the user.
+
+
+
+% \subsection*{\hphantom{More Testing Subsection}}
+% \vspace{-2em}\frsubsect{More Testing Subsection}{150}
+
+
+% % \presubsect{subsectionname}
+% \subsection*{\hphantom{subsectionname}}
+
+% \frsubsect{subsectionname}{150}
+
+% But there's a new problem here, because the subcount of the section is not updating to include subsections. Darn it. 
+
+
+% \section{Newest section}
+
+% \frsubsect{Theme Background - identify gap}{500}
+
+% \frsubsect{- what's a translation}{100}
+% \\A translation transforms the devil into el diablo. %\lipsum[1]
+
+% \frsubsect{- what's equivalence}{100}
+% \\Equivalence is about getting the word right and also getting the vibe right. %\lipsum[1]
+
+% \frsubsect{- what's a sign}{100}
+
+% \frsubsect{- what's a connotative sign}{100}
+
+% \frsubsect{- what's the difference between connotative/denotative signs}{100}
+
+
+% \frsect{Aims}{300}
+% \frsubsect{Research Aims}{100}
+% \frsubsect{Project Scope}{100}
+% \frsubsect{Limitations}{100}
+
+\end{document}

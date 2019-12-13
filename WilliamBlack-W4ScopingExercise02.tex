@@ -1,0 +1,145 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{wasysym}
+\usepackage[a4paper, margin=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{CJKutf8}
+\usepackage[english]{babel}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+ 
+\urlstyle{same}
+
+
+\newenvironment{Japanese}{%
+  \CJKfamily{min}%
+  \CJKtilde
+  \CJKnospace}{}
+
+
+\title{\textbf{Proof of Concept - Scoping Exercise II: \newline Computational Analysis}}
+\date{26 Aug 2019}
+\author{William Black 42920477}
+\setlength{\parindent}{0pt}
+
+\begin{CJK}{UTF8}{}
+\begin{Japanese}
+\begin{document}
+
+ 
+\maketitle \textbf{\small{Decomposition of Pains/Gains Processes from \textit{Scoping Exercise I: Business Analysis}}}
+(Steps marked with asterisks are especially repetitive or formulaic.)
+\begin{enumerate}
+    \item Data collection and transcription of original and translated animated Disney musical song lyrics
+    \begin{itemize}
+        \item Find popular aggregate film review scoring websites for English and Japanese 
+        \begin{itemize}
+            \item I have done this, the most popular appear to be \href{https://rottentomatoes.com/}{Rotten Tomatoes} and \\\href{https://movies.yahoo.co.jp}{Yahoo!映画} respectively
+        \end{itemize}
+        \item Rank most popular animated Disney musicals for each language audience
+        \item Pick highest ranking within top 10 for each language that has largest disparity of popularity ranking from the other language
+        \begin{itemize}
+            \item This is to identify the films that may have suffered/benefited the most from the translation process
+        \end{itemize}
+        \item Combine English and Japanese aggregate scores to identify top two films where translation has had most minimal impact on success
+        \item Search official soundtracks for four most marketed songs from each
+        \item Type song names individually +lyrics (or +letra, or +歌詞) into search engine
+        \item Attempt to retrieve lyrics*
+        \item If lyrics are unclickable (common on lyrics sites to encourage revisits to site), repeat search engine
+        \item Ideally, find all lyrics on same website, to make reformatting lyrics more predictable later
+        \item Copy all lyrics into Word document
+        \item Search each song on Youtube*
+        \item Listen to each song while reading lyrics to check accuracy*
+        \item Divide each song into lines of equal bar length with an enter-break*
+        \item In cases where languages have been divided into different lengths (usually because words/phrases run across lines in one language and not in another), do not allow divisions of whole words, and prioritise division strategies that make the fewest interruptions on phrasing across the language versions
+    \end{itemize}
+    \newpage
+    \item Contrastive linguistic comparison of lyrics against translations
+    \begin{itemize}
+        \item Copy the lyrics line by line to an Excel document divided into 3 variables columns "English" "Spanish" and "Japanese" so that all songlines match across each row*
+        \item Translate each line*
+        \begin{itemize}
+            \item Check my \href{jisho.org}{online English-Japanese} dictionary for unfamiliar language.
+            \item When denotative meaning does not match, check for possible connotative matches through an excellent \href{weblio.jp}{native Japanese dictionary} and through searching for the phrase in a search engine to see phrases in organic contexts.
+        \end{itemize}
+        \item Mark each translation for fidelity:
+        \begin{itemize}
+            \item 0-2 points for fidelity to \underline{denotative} meaning, where 0 indicates no discernible fidelity, 1 indicates partial fidelity, and 2 indicates close fidelity
+            \item 0-2 points for fidelity to \underline{connotative} meaning, where 0 indicates no discernible fidelity, 1 indicates partial fidelity, and 2 indicates close fidelity
+            \item Both scores get their own variable column, and a third variable column for combined score from 0-4
+        \end{itemize}
+    \end{itemize}
+    \item Structural linguistic analysis of differences in lyric meaning
+    \begin{itemize}
+        \item Find patterns in scores (We might expect very low denotative fidelity across all Japanese translations, or unusual instances where fidelity spikes/drops during a song worth investigation)
+        \item Inspect patterns and unusual changes in fidelity to analyse rationale for general translation strategies and sudden changes in translation strategy
+    \end{itemize}
+    \item Writing \& Bibliography process
+    \begin{itemize}
+        \item Open Word
+        \item Save document so Autosave actually works
+        \item Start with section headings along with approximate expected word count of each section
+        \item Write "skeleton" in grey font of items or "bones" I should like to include in literary background section, methodology section, each case study's individual points of interest, etc.
+        \item Fill in a few sentences at a time for each bone, keeping a running word count for each bone every half hour or so*
+        \item Keep separate window to check reference literature against what I've written
+        \begin{itemize}
+            \item References that are confirmed used are pinned to the left.
+            \item References that will be used but are currently being worked into the text unpinned on the left of the dictionary tab
+            \item References likely to be used but not sure where are unpinned between the dictionary tab and the thesaurus tab
+            \item References I may decide to use depending on detail I can reach are unpinned on the right of the thesaurus tab
+        \end{itemize}
+        \item Add bibliography and inline citations as necessary
+        \item Adding/removing/changing bones as necessary, fill skeleton to 80\% word count capacities
+        \item Rewrite thrice
+        \item Copy paste bibliography into clean Word document
+        \item With both documents open, check every inline citation in left window against every full citation in the right window, highlighting all citations that have been covered*
+        \item With any missing/incorrect citations accounted for, Select All and Unhighlight
+        \item Depending on word count progress, rewrite for conciseness or further detail
+    \end{itemize}
+\end{enumerate}
+
+\vspace{1em}
+\maketitle \textbf{Pattern Recognition}
+The most repetitive tasks are retrieving lyrics, finding each song online to check for lyrics accuracy (because some are non-canon or more recent re-recorded versions), actually listening and checking for accuracy whilst dividing songs into equal bar lengths, copying songlines into an Excel sheet, keeping track of subsection word counts while I write, and keeping track of bibliography and inline citations.
+
+\vspace{0.5em}
+This could be grouped into two main robots: 
+\begin{enumerate}
+    \item A robot that magically finds official canon lyrics in the same format and bar length, and populates them to an Excel column.
+    \item A robot that can ask me for my skeleton, then hold it semi-visible with a running word count for each bone while I write. The skeleton would have an area where I can drop Chrome tabs as placeholders for citations, where it would auto-suggest an inline citation and bibliography citation for me to edit later.
+\end{enumerate}
+This is a manageable number of robots to consider algorithm design for. While the first robot might appear more unique and exciting, comparing fidelity in translations is actually not often studied (I have not yet seen such a study), and would be unlikely to be reused. The second robot, while certainly less exciting and possibly something that already exists with some differences, is very tempting to me because my particular method of "skeleton" writing is laborious but highly effective at keeping me focused and well-paced on research goals and avoiding a feeling of not being sure what to write.
+
+\vspace{1em}
+\maketitle \textbf{Algorithm Design}
+
+\vspace{0.5em}
+Robot \#1: 
+\begin{itemize}
+    \item Searches for lyrics for a song across multiple websites, and returns resulting lyrics with number of sites found for each result
+    \item Decides which lyrics are the most correct (- I would probably have to determine which of these was most accurate with human intelligence. A lot of lyrics are just copy-pasted from other sites and incorrect lyrics are often a good audio match because they've been misheard by humans)
+    \item Once a set of three language versions of the song is found, populates them into a spreadsheet, using knowledge of number of syllables in line to assume where bars begin and end
+\end{itemize}
+
+Robot \#2:
+\begin{itemize}
+    \item Grey frame surrounding document allows me to add sections, subsections, and subsubsections
+    \item Allows me to add goal word counts to those sub/sub/sections
+    \item Adjusts as I type to keep framing my writing, counting words in each section, until I use a shortcut to turn the frames on/off
+    \item Word count turns blue within ten percent of goal, orange within twenty percent of goal, and red when more than thirty percent over
+    \item Allows me to drop Chrome tab on to bone to create a linked inline citation and bibliography entry
+    \item Generates a bibliography suggestion based on page contents
+    \item When double-clicked, allows me to enter bibliography details in fields, including invisible section for own notes on reference such as copy-pasting actual passage referenced
+    \item Automatically keeps inline citations linked to bibliography entry and changes correctly with entry
+    \item Keeps entries correctly formatted to APA 6th
+\end{itemize}
+
+\end{document}
+\end{Japanese} 
+\end{CJK}
