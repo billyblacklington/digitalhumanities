@@ -7,7 +7,7 @@
 \usepackage{CJKutf8}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{graphicx}
-\graphicspath{ {./William Black Exercises/} }
+\graphicspath{ {./images/} }
 \usepackage{scrextend}
 \usepackage{hyperref}
 \hypersetup{colorlinks=true,
@@ -162,134 +162,136 @@ The only problem I'm having with this is that in the actual document, I have to 
 \end{verbatim}
 This is because the macro doesn't seem to be able to create the section and THEN run the search on what it created. The phantom section is created so that the macro has it to search for. I can't stick these two lines into a new command either, because the new command will still run them simultaneously.
 
+\textbf{Action:}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-.
+According to the TeXCount \href{https://app.uio.no/ifi/texcount/download.php?doc=TeXcount_3_1_1.pdf}{instructions}: 
 
-.
+"subst macro text This substitutes a macro with any text. The verbose output will show the substituted text: e.g. \%TC:subst $\backslash$test TEST will cause a following $\backslash$newcommand$\backslash$test{TEST} to be changed into $\backslash$newcommand TEST{TEST}, which TEXcount will interpret differently. Use with care!"
 
-.
+So I use \texttt{\%TC:subst frsect section} to substitute frsect for section within the code, which allows TeXCount to function correctly, but also keeps my macro working.
 
-.
+\textbf{Result:}
 
-.
+It's functioning correctly at all levels now. At Brian's suggestion, the macro now uses margins to show the word count to be easier to scan.
 
-.
+\includegraphics[width=\textwidth]{imgelaborationmargincount.PNG}
+
+\newpage\underline{\textbf{\Large{Changing Frame Tests}}}
+
+\section{\large Change colour of frame depending on frame contents}
+
+\textbf{Intention:} Write conditionals for wordcount colouring using the \texttt{xcolor} package. At each recompile the wordcount should be blue within ten percent of the goal, orange within twenty percent of the goal, and red when over twenty percent. \href{https://en.wikibooks.org/wiki/TeX/ifnum}{This guide} to \texttt{ifnum} seems the easiest so far.
+
+\textbf{Action:} \begin{verbatim}
+     \marginnote{%
+        \color{%
+            \ifnum\input{cleancou.nt}>#2*1.3 Red%
+            \else\ifnum(\input{cleancou.nt}-#2)/#2>0.1 BurntOrange%
+            \else\ifnum\input{cleancou.nt}>#2*0.9 Blue%
+            \else Gray%
+            \fi\fi\fi}
+            {\textbf{\input{cleancou.nt}\unskip/#2}}%
+        }[-2em]%
+\end{verbatim}
+
+\textbf{Result:} Even with tinkering I seem to be a getting quite a few errors: 
+\begin{enumerate}
+    \item \texttt{$\backslash$input\{cleancou.nt\}} definitely isn't working within a macro. 
+    \item \#2 also seems to be a problem, but \texttt{$\backslash$ifnum} is not accepting any attempts to put them in parentheses, brackets or braces.
+    \item An error keeps appearing for \texttt{xcolor} that the colour ".3 Red" can't be found, and it's taking that decimal from a number I'm trying to use.
+\end{enumerate}
+Solutions:
+\begin{enumerate}
+    \item After reading a \href{https://tex.stackexchange.com/questions/204029/read-number-from-file}{tex.stackexchange of a similar problem}, I tried the same solution of opening and reading the file \texttt{cleancou.nt}, writing the number contained in the file to a defined as "\texttt{$\backslash$cnt}".
+    \item Searched how to \href{https://tex.stackexchange.com/questions/67362/passing-argument-to-ifnum}{pass an argument to \texttt{ifnum}}, but the strategy employed does not seem to be working in this case at all. It's possibly due to then manipulating the number from the argument and working with that. I then looked up how to make calculations using arguments and found \href{https://tex.stackexchange.com/questions/453454/calculations-on-variables-using-latex}{this strategy} that uses the \texttt{xfp} package to create floating points. The example used \texttt{$\backslash$newcommand{$\backslash$areaHeatExchanger}{$\backslash$fpeval{$\backslash$lengthHeatExchanger * $\backslash$heightHeatExchanger}}} particularly seems to be analogous to what I need to do.
+    \item Now that the previous issue is resolved, I can use these same floating points to keep manipulated numerals in braces, resolving the issue of decimal points accidentally being read as a colour. Unfortunately, because there is no manipulated number on the right side of the greater-than symbol, I'm still returning an error that the colour ".1 BurntOrange" is not a colour found in the \texttt{xcolor} package. Rather than bothering myself to create an argument or temporary file to get around that, I'll just change the maths to not require a decimal by multiplying both sides of the equation by 100.
+\end{enumerate}
+
+\textbf{Action:}
+\begin{verbatim}
+    \newread\tmp       
+        \openin\tmp=cleancou.nt
+        \read\tmp to \cnt
+        \closein\tmp
+    \marginnote{%
+        \color{%
+            \ifnum\cnt>\fpeval{#2*1.3} Red%
+            \else\ifnum\fpeval{(\cnt-#2)/#2*100}>10 BurntOrange%
+            \else\ifnum\cnt>\fpeval{#2*0.9} Blue%
+            \else Gray%
+            \fi\fi\fi}
+            {\textbf{\input{cleancou.nt}\unskip/#2}}%
+        }[-2em]%
+\end{verbatim}
+
+\textbf{Result:} Although this does actually compile, it brings up the same two error messages for nearly all instances where \texttt{$\backslash$frsect} is run: 
+\begin{itemize}
+    \item 
+        \begin{verbatim}
+        Missing = inserted for ifnum.
+        <to be read again>
+        l.143 ...ct{Background and Literature Review}{400}
+        I was expecting to see `<', `=', or `>'. Didn't.
+    \end{verbatim}
+    \item 
+    \begin{verbatim}
+        Missing number, treated as zero.
+        <to be read again>                           .
+        l.143 ...ct{Background and Literature Review}{400}
+        A number should have been here; I inserted `0'.
+        (If you can't figure out why I needed to see a number,
+        look up `weird error' in the index to The TeXbook.)
+    \end{verbatim}
+\end{itemize}
+
+\textbf{Action:} Research is absolutely not helping. I've tried using \texttt{etoolbox}, removing one line of code at a time, changing what it should output, researching how to use \texttt{$\backslash$relax}, and the same two errors appear on all sections except the second one. Removing one line of code at a time revealed the problem is with the two \texttt{$\backslash$else$\backslash$ifnum} lines but I can find plenty of examples online of nesting \texttt{$\backslash$ifnum} without issue. The \textbf{action} here is just to keep "tinkering" until it works out.
+
+\textbf{Result:} The issue turned out to be with \begin{verbatim}
+    \else\ifnum\fpeval{(\cnt-#2)/#2*100}>10 BurntOrange%
+\end{verbatim}
+The problem was that some of the sections had more than one test being true/false this way. It was running them in order to compile, which is what I wanted, but it produced the errors.
+
+I tinkered for five hours. 
+
+\textbf{Action:} \begin{verbatim}
+    \newcommand{\frsect}[2]{%
+    \section{#1}
+    \getsect{#1}
+    \newread\tmp      
+        \openin\tmp=cleancou.nt
+        \read\tmp to \cnt
+        \closein\tmp
+    \marginnote{%
+        \color{%
+            \ifnum\cnt>\fpeval{#2*1.2} Red%
+            \else\ifnum\cnt>\fpeval{#2*1.1} BurntOrange%
+            \else\ifnum\cnt>\fpeval{#2*0.9} ForestGreen%
+            \else Gray%
+            \fi\fi\fi}
+            {\doublebox{\large\textbf{\input{cleancou.nt}\unskip/#2}}}
+        }[-2em]%
+    }
+\end{verbatim}
+
+\textbf{Result:} 
+
+\centering{\includegraphics[scale=0.8]{imgelaborationcolourcount.PNG}}
+
+\flushleft It completely and totally works. I'm not sure why I would have wanted it to be orange when \textit{approaching} the goal in the first place, but I'm happy to lose this feature. I could just add it in again for \texttt{>\{\#2*0.8\}} but I don't want it, the program is more useful without it. 
+
 
 \section{\large Frames can be toggled on/off} 
 
-Presumably you can just break the code and it stops working, but that doesn't necessarily mean there won't be undesirable consequences like broken code displaying in the document.
+\textbf{Intention:} Create a toggle for the macro. I've been looking up how to make an \href{https://www.overleaf.com/learn/latex/Writing_your_own_package#Preliminary_declarations}{option} for the macro to turn it off so I can see how the product will look when I remove the frame and export it as a .pdf. I found slightly more comprehensive instructions from someone looking to do something similar on a \href{https://tex.stackexchange.com/a/449385}{stackexchange board}. Having never heard of "booleans", I'm using a \href{https://tex.stackexchange.com/questions/101076/difference-between-newbool-and-newtoggle-from-etoolbox-package}{tangentially related stackexchange thread} to help guide me setting the boolean and using the option in the code.
 
-One solution might be to add percentage marks to the frames so they become comments and neither function as code nor appear in the document, although this might be annoying to scroll through code and insert them for long documents with dozens of sections. \href{https://vim.fandom.com/wiki/Inserting_text_in_multiple_lines}{Here} is a solution to that where I can apply markers to multiple lines at once, if I choose to use an editor called Vim as my LaTeX editor.
+\textbf{Action:}
 
-In order to apply \textit{commands} to several parts of a document at once, I may need to create a \href{https://en.wikibooks.org/wiki/LaTeX/Macros}{macro}. It looks like by using \textbackslash newcommand\{\} I will be able to apply any a command to marked points I've prepared in advance throughout the document.
+\includegraphics[scale=0.7]{imgelaborationbooleans.PNG}
 
-\section{\large Word count is updated with each recompile, turning blue within ten percent of goal, orange within twenty percent of goal, and red when more than thirty percent over.}
+\textbf{Results:} It didn't work until I moved the TexCount invocation back into the test document. That means that added to each preamble, the user will need to define \texttt{$\backslash$xjobname} and also write \texttt{\%TC:subst frsect section} and \texttt{\%TC:subst frsubsect subsection} in their own preamble. I will have to add that to the instructions.
 
-It seems like it's at least possible to keep a running count of words in sections that updates with each recompile with a macro, based on an example \href{https://tex.stackexchange.com/a/44626}{seen here}.
+\section*{\underline{Elaboration Results}}
 
-LaTeX has an option to use \href{https://en.wikibooks.org/wiki/LaTeX/Macros#Conditionals}{conditionals} with an \texttt{ifthen} package. \href{https://tex.stackexchange.com/questions/13866/why-is-the-ifthen-package-obsolete}{A stackexchange post} talks about this package being obsolete with more modern options being available such as \href{https://ctan.org/pkg/etoolbox}{etoolbox}.
-
-\vspace{1em}
-\section*{\underline{\Large{\textbf{Testing:}}}}
-
-\subsection*{Formatting Tests}
-
-After creating a dummy document with lorem ipsum, the first thing to test is applying code to the sectioning system in the first place. The easiest way may be creating a macro. 
-
-\vspace{0.5em}
-\underline{Test A: (Testing Duties 1, 2, 3, 6)}
-
-Format any LaTeX section label to be grey and bold.
-
-If this fails, a user-created sectioning system will need to be created to have better control over formatting.
-
-$\downarrow$
-
-\underline{Test B: (Testing Duties 1, 2, 3, 4, 6)}
-
-Create macro that applies that formatting to all section headings.
-
-This might look something roughly like 
-\begin{verbatim}
-    \newcommand{\framesect}{\section{\insertformattinghere{#1}}}
-    \begin{document}
-    \framesect{Introduction}
-\end{verbatim}
-
-If this fails due to incompatibility with the native sectioning system, a user-created sectioning system may need to be created.
-
-If this fails due to my own weakness of skill, I will need to turn to further resources and guidance supporting macro creation. It may be necessary to follow a completely new route with a different editor, environment, or coding language.
-
-$\downarrow$
-
-\underline{Test C: (Testing Duties 1, 2, 3, 6)}
-
-Apply macro to all labels; sections, subsections, subsubsections.
-
-If this fails, possibly multiple macros will need to be made to cover the different duties required of sections vs subsubsections, for instance, a different macro may need to be created for those sections where the heading is forbidden from being toggled off, and must appear in the final document.
-
-If multiple macros cannot co-exist peacefully or time constraints do not allow completion, a manual solution can be used, for instance, inserting permanent headings after the writing process is finished.
-
-\vspace{2em}
-\subsection*{Word Count Tests}
-
-Assuming the formatting tests went smoothly, the process should be mostly repeatable or even extended to the requirements of word counting. If a macro was unable to be created, these tests should still apply to whatever process was used as an alternative.
-
-\underline{Test A: (Testing Duties 1, 2, 3, 4}
-
-Add word count goal to formatting macro.
-
-This should only require one extra element to type at each sectioning label, with an option to not specify word count goal.
-
-If this fails, a separate macro may have to be created.
-
-$\downarrow$
-
-\underline{Test B: (Testing Duties 1, 2, 4)}
-
-Extract a subcount of words for one section using a \texttt{texcount} macro.
-
-If this fails, other macros can be tested.
-
-If all macros fail, a different TeX environment like ConTeXt or LuaTeX may need to be considered, or possibly a different coding language. 
-
-$\downarrow$
-
-\underline{Test C: (Testing Duties 1, 2, 4, 6)}
-
-Test subcount strategy on all levels of sectioning. At each recompile, word counter should be able to return updated results for entire dummy document, each section, each subsection, etc.
-
-If this fails, separate word counts may need to be created to deal with each level of sectioning.
-
-\vspace{2em}
-\subsection*{Changing Frame Tests}
-
-Elements of the focus frame are supposed to change automatically and with user input.
-
-\underline{Test A: (Testing Duties 1, 2, 4, 6)}
-
-Extract subcount from section, and where subcount is with ten percent of section word count goal, turn word count from grey to blue using etoolbox.
-
-If no success with etoolbox, other packages like \texttt{ifthen} may be simpler to make, even if not as powerful.
-
-Any solution that passes this test should be replicatable for orange and red counts with their conditions.
-
-\vspace{1em}
-\underline{Test B: (Testing Duties 1, 5)}
-
-Create toggle for the macro/process.
-
-This should be the easiest part, it seems that every version of these scripts has an ability to simply say `fframe\=true' somewhere.
-
-If this test fails, a manual solution to turning it off can be found by entering \% marks on coded lines, or simply deleting the code.
-
-
-
-
-\vspace{3em}
-\section*{\underline{\textbf{\Large References:}}}
-
-Rouse, M. (2017). What is Perl? - Definition from WhatIs.com. Retrieved 29 August 2019, from https://whatis.techtarget.com/definition/Perl
+The Proof of Concept has passed all necessary tests to prove it is feasible to build. In this instance, it was necessary to actually build the macro to test whether it would be feasible, and the finished product is currently functional as-is.
 
 \end{document}

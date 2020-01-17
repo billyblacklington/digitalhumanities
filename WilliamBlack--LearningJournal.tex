@@ -5,7 +5,7 @@
 \usepackage[a4paper, margin=2cm]{geometry}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{graphicx}
-\graphicspath{ {./PoC Scoping Exercise/} }
+\graphicspath{ {./images/} }
 \usepackage{scrextend}
 
 \usepackage{CJKutf8}
@@ -2343,7 +2343,7 @@ In the \texttt{Undo / Redo} section, click \texttt{Extract...}, and select the s
 
 \href{https://github.com/OpenRefine/OpenRefine/wiki/Documentation-For-Users}{OpenRefine documentation Wiki site}
 
-\newpage\section{12.11.19 - Data Carpentry: R for Social Scientist}
+\newpage\section{12.11.19 - Data Carpentry: R for Social Scientists}
 
 \subsection{\href{https://datacarpentry.org/r-socialsci/00-intro/index.html}{\textbf{Before we Start
 }}}
@@ -2507,7 +2507,7 @@ Use \texttt{args(nameoffunction)} to see what arguments the function can take. I
 
 \textbf{Vectors}
 
-A vectors is a set of combined values set to an object with \texttt{c()}. The values can be numeric, character, integer, logical, complex, and raw. (Complex means 3 + 4i, for example, and raw is for a "bitstream" whatever that is) e.g. \texttt{hh\_members <- c(3, 7, 10, 6)} or \texttt{respondent\_wall\_type <- c("muddaub", "burntbricks", "sunbricks")}. The quotes are needed because otherwise R will think they're objects. This means you can use vectors as objects, too:
+A vector is a set of combined values set to an object with \texttt{c()}. The values can be numeric, character, integer, logical, complex, and raw. (Complex means 3 + 4i, for example, and raw is for a "bitstream" whatever that is) e.g. \texttt{hh\_members <- c(3, 7, 10, 6)} or \texttt{respondent\_wall\_type <- c("muddaub", "burntbricks", "sunbricks")}. The quotes are needed because otherwise R will think they're objects. This means you can use vectors as objects, too:
 \begin{verbatim}
     possessions <- c("bicycle", "radio", "television")
     possessions <- c(possessions, "mobile_phone") # add to the end of the vector
@@ -2626,8 +2626,7 @@ It's uncommon for programming languages to understand missing data, but R was de
             [1] 1
         > roomswona[roomswona>2]
             [1] 3 3 8 3
-        > roomsovertwo <- roomswona[roomswona>2]
-        > length(roomsovertwo)
+        length(roomswona[roomswona>2])
             [1] 4
   \end{verbatim}
   \item \textbf{Result:} By assigning objects to each step of the process, I can perform functions on updated lists. And it's probably better not to tamper with your original list anyway - you may need it in its original form later.
@@ -2635,17 +2634,379 @@ It's uncommon for programming languages to understand missing data, but R was de
 
 \end{addmargin}
 
-\newpage\section{}
+\newpage\section{06.01.20 - Data Carpentry: R for Social Scientists}
+
+\subsection{\href{https://datacarpentry.org/r-socialsci/02-starting-with-data/index.html}{\textbf{Starting with Data}}}
+\color{gray}
+\underline{Questions}
+
+What is a data.frame?
+
+How can I read a complete csv file into R?
+
+How can I get basic summary information about my dataset?
+
+How can I change the way R treats strings in my dataset?
+
+Why would I want strings to be treated differently?
+
+How are dates represented in R and how can I change the format?
+
+\underline{Objectives}
+
+Describe what a data frame is.
+
+Load external data from a .csv file into a data frame.
+
+Summarize the contents of a data frame.
+
+Describe the difference between a factor and a string.
+
+Convert between strings and factors.
+
+Reorder and rename factors.
+
+Change how character strings are handled in a data frame.
+
+Examine and change date formats.
+\color{black}
+\vspace{1em}
+
+\textbf{Loading the data in R}
+
+Use \texttt{read\_csv()} to read a csv file, change the signal for na (or \texttt{read\_csv2} if delimiters are semicolons) and put it in a variable to use it.
+
+E.g. \texttt{interviews <- read\_csv("data/SAFI\_clean.csv", na = "NULL")}
+
+\textbf{Data Frames}
+
+A data frame is a table where the columns are vectors (so single type of data e.g. character, logical, numeric) of equal length. Usually the frame is created by importing a spreadsheet with \texttt{read\_csv()} or \texttt{read\_table()}.
+
+\textbf{Tibbles}
+
+A tibble is a modern reimagining of the data frame, keeping what time has proven to be effective and throwing out what isn't. Tibbles are data frames that are lazy and surly; they do less (don't change variable names or types, don't do partial matching) and complain more (like when a variable doesn't exist), forcing you to confront problems ASAP to leave you with cleaner, more expressive code. When data is read with \texttt{read\_csv()}, it's stored in an object of class \texttt{tbl\_df}, \texttt{tbl}, and \texttt{data.frame}.
+
+\vspace{0.5em}
+\begin{addmargin}[1cm]{0cm}
+\color{gray}
+\underline{Exercise:}
+
+1. Create a data frame (\texttt{interviews\_100}) containing only the data in row 100 of the interviews dataset.
+
+2. Notice how \texttt{nrow()} gave you the number of rows in a data frame?
+
+\begin{itemize}
+    \item Use that number to pull out just that last row in the data frame.
+    \item Compare that with what you see as the last row using \texttt{tail()} to make sure it’s meeting expectations.
+    \item Pull out that last row using \texttt{nrow()} instead of the row number.
+    \item Create a new data frame (\texttt{interviews\_last}) from that last row.
+\end{itemize}
+
+3. Use \texttt{nrow()} to extract the row that is in the middle of the data frame. Store the content of this row in an object named \texttt{interviews\_middle}.
+
+Combine \texttt{nrow()} with the \texttt{\-} notation above to reproduce the behavior of \texttt{head(interviews)}, keeping just the first through 6th rows of the interviews dataset.
+\end{addmargin}
+
+\color{black}\vspace{0.5em}
+
+\centering\includegraphics[scale=1]{imgdcrtibbles.PNG}
+
+\flushleft\textbf{Factors}
+
+A factor is a special data class for categorical data. Although they look like character vectors, they are treated as integer vectors. Factors can only contain pre-defined values known as "levels" which are always sorted alphabetically.
+
+\texttt{levels(variable)} to see what levels, and \texttt{nlevels(variable)} to see number of levels.
+
+The levels are given an integer based on alphabetical order, allowing categories to have an integer representation (useful for graphs etc), but are also self-descriptive.
+
+You can manually change the levels, if it would make more sense. E.g. 
+
+\texttt{respondentenglishcapacity <- factor(respondentenglishcapacity, levels = c("poor", "conversational", "fluent"))} 
+
+This would make levels 1, 2, and 3 in that order instead of conversational - fluent - poor.
+
+To rename a whole integer at once, encode the level of the factor. E.g. 
+
+\texttt{levels(respondentenglishcapacity)[1] <- "developing"} 
+
+This will change "poor" to "developing".
+
+\vspace{1em}
+\textbf{Converting factors to vectors}
+
+To convert a factor to a character vector, use \texttt{as.character(respondentenglishcapacity)}
+
+\texttt{as.numeric()} will just return the index values of the factor, leaving you with a list of 3 2 3 3 1 1 2 etc.
+
+To convert to a numeric vector, \texttt{as.numeric(levels(yearcreated))[yearcreated]} is the recommended way to have a vector that looks like 1999, 1945, 2017, 2001 etc. 
+
+The reason that works is that R gets the factor levels with \texttt{levels(yearcreated)}, convert the levels to their numeric index with \texttt{as.numeric()}, and then access the values using the underlying integer contained in \texttt{yearcreated} in square brackets.
+
+\vspace{1em}\textbf{Plotting factors}
+
+Use \texttt{plot()} to see the number of observations represented by each factor level. This will skip over NAs - rename NAs with \texttt{ispregnant[is.na(ispregant)] <- "Unknown"} if you want to include that information in your plot.
 
 
+\vspace{0.5em}
+\begin{addmargin}[1cm]{0cm}
+\color{gray}
+\underline{Exercise:}
+
+1. Rename the levels of the factor to have the first letter in uppercase: “No”,”Undetermined”, and “Yes”.
+
+2. Now that we have renamed the factor level to “Undetermined”, can you recreate the barplot such that “Undetermined” is last (after “Yes”)?
+
+\color{black}\vspace{0.5em}
+{\subsubsection{\texorpdfstring{\underline{Error: R: Renaming and Reordering Factors}}{}}\label{error:er20}
+\begin{itemize}
+    \item \textbf{Intention:} To rename and reorder "no", "undetermined", and "yes" to "No", "Yes", and "Undetermined" for a sensible graph.
+    \item \textbf{Action:} \vspace{-1em}\begin{verbatim} 
+> plot(memb_assoc)
+> memb_assoc <- factor(memb_assoc, levels= c("No", "Yes", "Undetermined"))
+> plot(memb_assoc)
+    \end{verbatim}
+    \item \textbf{Result:} The plot shows 0 responses for No, Yes, and Undetermined. I can see by calling \texttt{memb\_assoc} that every observation is now NA.
+\end{itemize}
+\begin{itemize}
+\renewcommand{\labelitemi}{}
+\item \underline{Solution:}
+\renewcommand{\labelitemi}{$\bullet$}
+      \item \textbf{Intention:} I need to restore the information to \texttt{memb\_assoc}, then change missing data to "undetermined" again, and rename the different levels.
+    \item \textbf{Action:} \vspace{-1em}\begin{verbatim}
+> memb_assoc <- interviews$memb_assoc
+> memb_assoc[is.na(memb_assoc)] <- "undetermined"
+> memb_assoc <- as.factor(memb_assoc)
+> memb_assoc[1]
+      \end{verbatim}\vspace{-2em}
+      \item \textbf{Result:} \vspace{-1em}\begin{verbatim}
+[1] undetermined
+Levels: no undetermined yes
+      \end{verbatim}\vspace{-2em} I realise that pulling [1] from the factor is actually giving me the first result, not the label of the first level. I need to rename the first level, not the results.
+      \item \textbf{Action:} \vspace{-1em}\begin{verbatim}
+> levels(memb_assoc)[1]
+[1] "no"
+> levels(memb_assoc)[1] <- "No"
+> levels(memb_assoc)[2] <- "Yes"
+> levels(memb_assoc)[3] <- "Undetermined"
+> plot(memb_assoc)
+      \end{verbatim}\vspace{-2em}
+    \item \textbf{Result:} This is also wrong, I've accidentally renamed the missing data as "Yes" and the yeses as "Undetermined". I'm worried if I rename the missing data "Undetermined" then the factor may remove the the unused level, so I will rename it something different and rename the yeses correctly before fixing it. Then I can reorder the levels.
+      \item \textbf{Action:} \vspace{-1em}\begin{verbatim}
+> levels(memb_assoc)[2] <- "Undeterminedd"
+> levels(memb_assoc)[3] <- "Yes"
+> levels(memb_assoc)[2] <- "Undetermined"
+> plot(memb_assoc)
+> memb_assoc <- factor(memb_assoc, levels= c("No","Yes","Undetermined"))
+> plot(memb_assoc)
+      \end{verbatim}\vspace{-2em}
+      \item\textbf{Result:} The graph displays correctly. 
+\end{itemize}}      
+\end{addmargin}
+\centering\includegraphics[scale=0.8]{imgdcrplot.PNG}
+
+\newpage\flushleft\section{10/01/20 - Data Carpentry: R for Social Scientists}
+\subsection{\href{https://datacarpentry.org/r-socialsci/03-dplyr-tidyr/index.html}{\textbf{Introducing dplyr and tidyr}}}
+\color{gray}
+\underline{Questions}
+
+How can I select specific rows and/or columns from a data frame?
+
+How can I combine multiple commands into a single command?
+
+How can create new columns or remove existing columns from a data frame?
+
+How can I reformat a dataframe to meet my needs?
+
+\underline{Objectives}
+
+Describe the purpose of an R package and the dplyr and tidyr packages.
+
+Select certain columns in a data frame with the dplyr function \texttt{select}.
+
+Select certain rows in a data frame according to filtering conditions with the dplyr function \texttt{filter}.
+
+Link the output of one dplyr function to the input of another function with the ‘pipe’ operator \%\textgreater\%.
+
+Add new columns to a data frame that are functions of existing columns with \texttt{mutate}.
+
+Use the split-apply-combine concept for data analysis.
+
+Use \texttt{summarize}, \texttt{group\_by}, and \texttt{count} to split a data frame into groups of observations, apply a summary statistics for each group, and then combine the results.
+
+Describe the concept of a wide and a long table format and for which purpose those formats are useful.
+
+Describe what key-value pairs are.
+
+Reshape a data frame from long to wide format and back with the \texttt{spread} and \texttt{gather} commands from the tidyr package.
+
+Export a data frame to a csv file.
+
+\color{black}
+\vspace{1em}
+
+\textbf{Data Manipulation using \texttt{dplyr} and \texttt{tidyr}}
+
+\texttt{dplyr} and \texttt{tidyr} are R packages written in C++ to manipulate data to different formats
+
+\texttt{select()} selects columns of a data frame. First argument is the data frame, next arguments are which columns to keep
+
+\texttt{filter()} chooses rows based on specific criteria. First argument is the data frame, next arguments are the responses to keep (e.g. village == "God")
+
+Pipes take the object on the left and pass it as the first argument to the function on its right. \texttt{Ctrl+Shift+M} makes a pipe \texttt{\%\textgreater\%}
 
 
+\vspace{0.5em}
+\begin{addmargin}[1cm]{0cm}
+\color{gray}
+\underline{Exercise:}
 
+Using pipes, subset the \texttt{interviews} data to include interviews where respondents were members of an irrigation association (\texttt{memb\_assoc}) and retain only the columns \texttt{affect\_conflicts}, \texttt{liv\_count}, and \texttt{no\_meals}.
 
+\color{black}\vspace{0.5em}
 
+\begin{verbatim}
+> interviews %>%
+filter(memb_assoc == "yes") %>%
+select(affect_conflicts, liv_count, no_meals)
+\end{verbatim}
 
+\end{addmargin}
 
+\texttt{mutate()} creates new columns based on values in existing columns. E.g. \texttt{mutate(avgpplperroom = no\_membrs / rooms)}
 
+\vspace{0.5em}
+\begin{addmargin}[1cm]{0cm}
+\color{gray}
+\underline{Exercise:}
+
+Create a new data frame from the \texttt{interviews} data that meets the following criteria: contains only the \texttt{village} column and a new column called \texttt{total\_meals} containing a value that is equal to the total number of meals served in the household per day on average (\texttt{no\_membrs} times \texttt{no\_meals}). Only the rows where \texttt{total\_meals} is greater than 20 should be shown in the final data frame.
+
+\color{black}\vspace{0.5em}
+
+\begin{verbatim}
+> interviews %>% 
++ mutate(total_meals=no_membrs * no_meals) %>% 
++ filter(total_meals>20) %>% 
++ select(village, total_meals)
+\end{verbatim}
+\end{addmargin}
+
+\texttt{group\_by()} groups data, taking \textit{categorical} variables as arguments.
+
+\texttt{summarize()} collapses each group into a single-line summary of that group.
+
+\underline{Example:}
+\vspace{-1em}\begin{verbatim}
+interviews %>%
+    filter(!is.na(memb_assoc)) %>%
+    group_by(village, memb_assoc) %>%
+    summarize(mean_no_membrs = mean(no_membrs),
+              min_membrs = min(no_membrs)) %>%
+    arrange(desc(min_membrs))
+\end{verbatim}
+In the above example, from the data set \texttt{interviews}, the NAs of membership are filtered out, the data is grouped by village, and then whether they are members or not, returning a summary of the average number of household members and the minimum number of members in created columns for each, then sorted in descending order.
+
+\texttt{count()} returns the number of of observations found for each factor (or group). E.g. \texttt{count(interviews, village, sort=TRUE} will show how many data entries exist for each village in \texttt{interviews}. You can remove the sort=TRUE to get them in alphabetical order rather than sorted by number of results.
+
+\vspace{0.5em}
+\begin{addmargin}[1cm]{0cm}
+\color{gray}
+\underline{Exercise:}
+
+\vspace{-1em}\begin{enumerate}
+    \item How many households in the survey have an average of two meals per day? Three meals per day? Are there any other numbers of meals represented?
+    \item Use \texttt{group\_by()} and \texttt{summarize()} to find the mean, max, and max number of household members for each village. Also add the number of observations (hint: see \texttt{?n}).
+    \item What was the largest household interviewed in each month?
+\end{enumerate}
+
+\vspace{-1em}\color{black}
+\begin{enumerate}
+    \item \begin{verbatim}
+> avg_meals <- interviews %>% 
++ mutate(avg_meals=no_membrs*no_meals/no_membrs) %>% 
++ select(village, avg_meals)
+> count(avg_meals, avg_meals)
+# A tibble: 2 x 2
+  avg_meals     n
+      <dbl> <int>
+1         2    52
+2         3    79
+> 
+\end{verbatim}
+    \item 
+\begin{verbatim}
+> interviews %>% 
++ group_by(village) %>% 
++ summarize(mean_membrs=mean(no_membrs),min_membrs=min(no_membrs),
+max_membrs=(max(no_membrs)),no_of_obs=n())
+# A tibble: 3 x 5
+  village  mean_membrs min_membrs max_membrs no_of_obs
+  <chr>          <dbl>      <dbl>      <dbl>     <int>
+1 Chirodzo        7.08          2         12        39
+2 God             6.86          3         15        43
+3 Ruaca           7.57          2         19        49
+> 
+\end{verbatim}
+\item 
+\begin{verbatim}
+> interviews %>% 
++ group_by(interview_date,village) %>% 
++ summarize(max_membrs=max(no_membrs))
+# A tibble: 30 x 3
+# Groups:   interview_date [19]
+   interview_date      village  max_membrs
+   <dttm>              <chr>         <dbl>
+ 1 2016-11-16 00:00:00 Chirodzo         12
+ 2 2016-11-17 00:00:00 Chirodzo         10
+ 3 2016-11-17 00:00:00 God              12
+ 4 2016-11-18 00:00:00 Ruaca             6
+ 5 2016-11-21 00:00:00 God              10
+ 6 2016-11-21 00:00:00 Ruaca            19
+ 7 2016-11-23 00:00:00 Ruaca             5
+ 8 2016-11-24 00:00:00 God               6
+ 9 2016-11-24 00:00:00 Ruaca            10
+10 2016-11-25 00:00:00 God              11
+# ... with 20 more rows
+> 
+\end{verbatim}
+
+I can't work out how to sort these by month. I'm looking at the answer. 
+
+The answer says that \texttt{month()} is a viable function. The solution was: \color{gray}\begin{verbatim}
+interviews %>%
+    mutate(month = month(interview_date),
+           day = day(interview_date),
+           year = year(interview_date)) %>%
+    group_by(year, month) %>%
+    summarize(max_no_membrs = max(no_membrs))
+\end{verbatim}
+\end{enumerate}
+
+\end{addmargin}
+\color{black}
+\textbf{Reshaping with \texttt{spread()} and \texttt{gather()}}
+
+\texttt{spread()} takes a column of responses and spreads that to a separate column for each response. E.g. If a "teamcolour" column can be red, green, or yellow, the "teamcolour" column is dropped and TeamA will show Red is TRUE, Green and Yellow are FALSE.
+\begin{verbatim}
+    team_spread <- teamsdata %>%
+        mutate(teamcolour_logic = TRUE) %>%
+        spread(key = teamcolour, value = teamcolour_logic, fill = FALSE)
+\end{verbatim}
+
+\texttt{teamcolour\_logic} is a dummy column that just holds the value TRUE. \texttt{fill=FALSE} just fills the rest of the observations in the spread with FALSE.
+
+\vspace{2em}
+\texttt{gather()} does the opposite:
+\vspace{-1.5em}\begin{verbatim}
+    team_gather <- team_spread %>%
+        gather(key = teamcolour, value = "teamcolour_logic", green:yellow) %>%
+        filter(teamcolour_logic) %>%
+        select(-teamcolour_logic)
+\end{verbatim}
+
+This example gathers the existing values of "teamcolour\_logic" from columns "green" until "yellow" (which will include "red") into a column named "teamcolour". "teamcolour\_logic" is already only TRUE or FALSE, so it will only keep rows where value is TRUE. Select(-teamcolour\_logic) just drops the column from the result - this doesn't happen automatically.
+
+\textbf{Cleaning data}
 
 
 
@@ -2688,6 +3049,7 @@ It's uncommon for programming languages to understand missing data, but R was de
     \item \ref{error:er17} Shell: Pipe Functionality
     \item \ref{error:er18} Shell: Grepping Singular Words
     \item \ref{error:er19} R: Multiple Functions
+    \item \ref{error:er20} R: Renaming and Reordering Factors
 \end{itemize}
 
 \end{document}

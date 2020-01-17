@@ -1,0 +1,76 @@
+\documentclass[10pt]{article}
+\usepackage[off]{focusframe}
+%TC: subst frsect section
+%TC: subst frsubsect subsection
+\edef\xjobname{WilliamBlack-W7PoCDesign}
+\setcounter{secnumdepth}{0}
+
+\title{PoC Design}
+\author{William Black 42920477}
+\date{27/12/2019}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+
+\begin{document}
+\maketitle
+
+\frsect{Introduction}
+
+The problem with building a pipeline in research is that often, especially with inexperience, code is added ad-hoc to the system to fix problems that arise, and is then never organised or reproducible to do similar things to later projects. The aim of designing this Proof of Concept is to show how its elements can be divided into smaller, working, machine parts, reusable in other future projects.
+
+\frsect{User Role}
+
+As a research student with ADHD, I want my typesetting software to keep a running word-count of each section, so that I may focus on large tasks like essays in chunks, easily keep focus of each section's progress, and reduce wasted writing time on overly distracted and verbose writing.
+
+\frsect{Acceptance criteria}
+
+\begin{itemize}
+    \item Costs less time to implement than current method of click-dragging, checking wordcount of highlighted section, and marking down current wordcount manually
+    \item Counts words in each section of a document
+    \item Counts words in whole document
+    \item Counts words in section separately to nested subsections
+    \item Does not require any specific copyrighted platform to run
+    \item Visually represented intuitively without having to "read" numbers
+    \item Works on multiple documents regardless of type
+    \item Will ignore a bibliography if bibliography should not be included
+    \item Can be toggled off for final version or to preview final version
+\end{itemize}
+
+\frsect{Ordering stories by theme and dependency} 
+
+\textbf{Crucial:}
+\begin{enumerate}
+    \item Works in any document
+    \begin{enumerate}
+        \item Does not require any specific copyrighted platform to run
+        \item Works on multiple documents regardless of type
+    \end{enumerate}
+    \item Counts words
+    \begin{enumerate}
+        \item Counts words in whole document
+        \item Counts words in each section of a document
+        \item Counts words in section separately to nested subsections
+    \end{enumerate}
+    \item Is temporary
+    \begin{enumerate}
+        \item Can be toggled off for final version or to preview final version
+    \end{enumerate}
+\end{enumerate}
+
+\textbf{Non-crucial:}
+\begin{enumerate}\setcounter{enumi}{3}
+    \item Time-friendliness
+    \begin{enumerate}
+        \item Costs less time to implement than current method of click-dragging, checking wordcount of highlighted section, and marking down current wordcount manually
+        \item Visually represented intuitively without having to spend time to "read" numbers
+        \item Will ignore a bibliography if bibliography should not be included, at less time-cost than temporarily removing the bibliography from the document
+    \end{enumerate}
+\end{enumerate}
+
+\frsect{Quality Assurance}
+ 
+The acceptance tests have essentially been documented during the Elaboration phase of the project. In order to check that the things I was attempting were possible, I had to build the macro and test it. The assurance of quality is found in that documentation.
+
+A trello board tracking the progress of this project can be found \href{https://trello.com/b/upIfqOv2}{here}.
+
+\end{document}
