@@ -3007,7 +3007,47 @@ interviews %>%
 This example gathers the existing values of "teamcolour\_logic" from columns "green" until "yellow" (which will include "red") into a column named "teamcolour". "teamcolour\_logic" is already only TRUE or FALSE, so it will only keep rows where value is TRUE. Select(-teamcolour\_logic) just drops the column from the result - this doesn't happen automatically.
 
 \textbf{Cleaning data}
+To clean data we can use \texttt{spread()} to put data information in new columns with logic values.
 
+\begin{verbatim}
+    interviews_items_owned <- interviews %>%
+    separate_rows(items_owned, sep=";") %>%
+    mutate(items_owned_logical = TRUE) %>%
+    spread(key = items_owned, value = items_owned_logical, fill = FALSE)
+\end{verbatim}
+This will allow working with each item owned, for example you might wonder how many bicycles each village has by \texttt{filter(bicycle), group\_by(village), count(bicycle)}, or if you need the average number of items per village:
+\begin{verbatim}
+    interviews_items_owned %>%
+    mutate(number_items = rowSums(select(., bicycle:television))) %>%
+    group_by(village) %>%
+    summarize(mean_items = mean(number_items))
+\end{verbatim}
+\vspace{0.5em}
+\begin{addmargin}[1cm]{0cm}
+\color{gray}
+\underline{Exercise:}
+
+1. Create a new data frame (named \texttt{interviews_months_lack_food}) that has one column for each month and records \texttt{TRUE} or \texttt{FALSE} for whether each interview respondent was lacking food in that month.
+\\2. How many months (on average) were respondents without food if they did belong to an irrigation association? What about if they didn’t?
+
+\color{black}\vspace{0.5em}
+
+1. \begin{verbatim}
+interviews_months_lack_food <- interviews %>%
+  separate_rows(months_lack_food, sep=";") %>%
+  mutate(monthslackfood_logic  = TRUE) %>%
+  spread(key = months_lack_food, value = monthslackfood_logic, fill = FALSE) %>%
+  view()
+\end{verbatim} 
+\\2. \begin{verbatim}
+interviews_months_lack_food %>%
+  mutate(no_of_months = rowSums(select(., Apr:Sept))) %>%
+  group_by(memb_assoc) %>%
+  summarize(mean_months = mean(no_of_months)) %>%
+  view()
+\end{verbatim}
+Those that weren't members averaged 2.31 months lacking food. Those that were members averaged 2.64 months lacking food.
+\end{addmargin}
 
 \newpage
 
