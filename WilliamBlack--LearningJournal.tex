@@ -3027,8 +3027,9 @@ This will allow working with each item owned, for example you might wonder how m
 \color{gray}
 \underline{Exercise:}
 
-1. Create a new data frame (named \texttt{interviews_months_lack_food}) that has one column for each month and records \texttt{TRUE} or \texttt{FALSE} for whether each interview respondent was lacking food in that month.
-\\2. How many months (on average) were respondents without food if they did belong to an irrigation association? What about if they didn’t?
+1. Create a new data frame (named \texttt{interviews\_months\_lack\_food}) that has one column for each month and records \texttt{TRUE} or \texttt{FALSE} for whether each interview respondent was lacking food in that month.
+
+2. How many months (on average) were respondents without food if they did belong to an irrigation association? What about if they didn’t?
 
 \color{black}\vspace{0.5em}
 
@@ -3036,10 +3037,10 @@ This will allow working with each item owned, for example you might wonder how m
 interviews_months_lack_food <- interviews %>%
   separate_rows(months_lack_food, sep=";") %>%
   mutate(monthslackfood_logic  = TRUE) %>%
-  spread(key = months_lack_food, value = monthslackfood_logic, fill = FALSE) %>%
+  spread(key=months_lack_food, value=monthslackfood_logic, fill=FALSE) %>%
   view()
 \end{verbatim} 
-\\2. \begin{verbatim}
+2. \begin{verbatim}
 interviews_months_lack_food %>%
   mutate(no_of_months = rowSums(select(., Apr:Sept))) %>%
   group_by(memb_assoc) %>%
@@ -3050,39 +3051,209 @@ Those that weren't members averaged 2.31 months lacking food. Those that were me
 \end{addmargin}
 
 \newpage
-\subsection{\href{http://www.abc.com}{\textbf{Page Title}}}
+\section{01.03.20 - Data Carpentry: R for Social Scientists}
+\subsection{\href{https://datacarpentry.org/r-socialsci/04-ggplot2/index.html}{\textbf{Data Visualisation with ggplot2}}}
 \color{gray}
 \underline{Questions}
 
+What are the components of a ggplot?
 
+How do I create scatterplots, boxplots, and barplots?
+
+How can I change the aesthetics (ex. colour, transparency) of my plot?
+
+How can I create multiple plots at once?
 
 \underline{Objectives}
 
+Produce scatter plots, boxplots, and time series plots using ggplot.
 
+Set universal plot settings.
+
+Describe what faceting is and apply faceting in ggplot.
+
+Modify the aesthetics of an existing ggplot plot (including axis labels and color).
+
+Build complex and customized plots from data in a data frame.
 
 \color{black}
 \vspace{1em}
 
+\textbf{Plotting with \texttt{ggplot2}}
 
+Basic template to plot with \texttt{ggplot2}:
+
+\texttt{ggplot(data = <DATA>, mapping = aes(<MAPPINGS>)) +  <GEOM\_FUNCTION>()}
+
+For example:
+
+\texttt{ggplot(data=interviews\_plotting, aes(x=no\_membrs,y=number\_items)) +} 
+
+\texttt{    geom\_point()}
+
+You can also assign the plot to a variable, and THEN plot it.
+\begin{verbatim}
+# Assign plot to a variable
+interviews_plot <- ggplot(data=interviews_plotting,aes(x=no_membrs,y=number_items))
+# Draw the plot
+interviews_plot +
+    geom_point()
+\end{verbatim}
+Avoid overplotting by adding transparency with \texttt{(alpha)} and randomisation with \texttt{geom\_jitter()} function. You can also add aes(color=<CATEGORY>) to better visualise trends.
+\begin{verbatim}
+ggplot(data = interviews_plotting, aes(x = no_membrs, y = number_items)) +
+    geom_jitter(aes(color=village), alpha = 0.5)    
+\end{verbatim}
+
+\newpage
+\begin{addmargin}[1cm]{0cm}
+\color{gray}
+\underline{Exercise:}
+
+1. Use what you just learned to create a scatter plot of \texttt{rooms} by \texttt{village} with the \texttt{respondent\_wall\_type} showing in different colors. 
+
+2. Is this a good way to show this type of data?
+
+\color{black}\vspace{0.5em}
+
+1. \includegraphics[scale=0.8]{imgdcrcolorplot.PNG}
+
+2. No, there is no way to see trends because the x axis is categorical. A scatterplot is only useful when both axes are numerical. You would be better off with a boxplot.
+
+\end{addmargin}
+
+\textbf{Boxplots}
+
+Use \texttt{geom\_boxplot()} function for boxplots. For example:
+\begin{verbatim}
+ggplot(data = interviews_plotting, aes(x = respondent_wall_type, y = rooms)) +
+    geom_boxplot(alpha = 0) +
+    geom_jitter(alpha = 0.5, color = "tomato")    
+\end{verbatim}
+
+
+
+\newpage
+\begin{addmargin}[1cm]{0cm}
+\color{gray}
+\underline{Exercise:}
+
+Boxplots are useful summaries, but hide the shape of the distribution. For example, if the distribution is bimodal, we would not see it in a boxplot. An alternative to the boxplot is the violin plot, where the shape (of the density of points) is drawn.
+
+1. Replace the box plot with a violin plot; see \texttt{geom\_violin()}.
+
+2. So far, we’ve looked at the distribution of room number within wall type. Try making a new plot to explore the distribution of another variable within wall type.
+
+Create a boxplot for \texttt{liv\_count} for each wall type. Overlay the boxplot layer on a jitter layer to show actual measurements.
+
+3. Add color to the data points on your boxplot according to whether the respondent is a member of an irrigation association \texttt{(memb\_assoc)}.
+
+\color{black}\vspace{0.5em}
+
+1. \includegraphics[scale=0.4]{imgdcrviolin.PNG}
+
+2. \includegraphics[scale=0.4]{imgdcrboxlivcount.PNG}
+
+3. \includegraphics[scale=0.5]{imgdcrboxcolor.PNG}
+
+\end{addmargin}
+
+\newpage\textbf{Barplots}
+
+Use \texttt{geom\_bar()} with any variable for x, and y will by default act as count. Use \texttt{(fill=village)} to colour sections of the barplot by village.
+
+To compare proportionally, create a new data frame with your calculated percentages. For example:
+\begin{verbatim}
+percent_wall_type <- interviews_plotting %>%
+    filter(respondent_wall_type != "cement") %>%
+    count(village, respondent_wall_type) %>%
+    group_by(village) %>%
+    mutate(percent = n / sum(n)) %>%
+    ungroup()
+    
+ ggplot(percent_wall_type, aes(x=village, y=percent, fill=respondent_wall_type)) +
+     geom_bar(stat = "identity", position = "dodge")
+\end{verbatim}
+In the above example we removed "cement", since there was only one data entry.
 
 \vspace{0.5em}
 \begin{addmargin}[1cm]{0cm}
 \color{gray}
 \underline{Exercise:}
 
-1. 
-\\2. 
+Create a bar plot showing the proportion of respondents in each village who are or are not part of an irrigation association (memb\_assoc). Include only respondents who answered that question in the calculations and plot. Which village had the lowest proportion of respondents in an irrigation association?
 
 \color{black}\vspace{0.5em}
 
-1.
-\\2.
-
+\begin{verbatim}
+percent_memb_assoc <- interviews_plotting %>%
+    filter(!is.na(memb_assoc) %>%
+    count(village, memb_assoc) %>%
+    group_by(village) %>%
+    mutate(percent = n / sum(n)) %>%
+    ungroup()
+    
+ggplot(percent_memb_assoc, aes(x=village,y=percent,fill=memb_assoc)) +
+    geom_bar(stat = "identity", position = "dodge")
+\end{verbatim}
+The bar plot shows Ruaca has the lowest proportion of membership with an irrigation association.
 \end{addmargin}
 
+\vspace{0.5em}\textbf{Labels and Faceting}
+
+You may need the axes to be labelled differently from how they appear in your data. You may want to wrap them into sections, such as this example with a separate graph per village. For readability, you might want to make it B+W friendly for an article.
+\begin{verbatim}
+ggplot(percent_wall_type, aes(x=village, y=percent, fill=respondent_wall_type)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    labs(title="Proportion of wall type by village",
+         x="Wall Type",
+         y="Percent") +
+    facet_wrap(~ village)
+    theme_bw() +
+    theme(panel.grid = element_blank())
+\end{verbatim}
+
+\newpage\textbf{Themes}
+
+Cheat sheet for making graphs look good can be found \href{https://rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf}{here}. If you like the theme you made, you can save it to a variable as a preset:
+\begin{verbatim}
+grey_theme <- theme(axis.text.x=element_text(colour="grey20",size=12,angle=45,
+    hjust=0.5,vjust=0.5),
+                    axis.text.y = element_text(colour = "grey20", size = 12),
+                    text = element_text(size = 16),
+                    plot.title = element_text(hjust = 0.5))
 
 
+ggplot(percent_items, aes(x = village, y = percent)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    facet_wrap(~ items) +
+    labs(title = "Percent of respondents in each village \n who owned each item",
+         x = "Village",
+         y = "Percent of Respondents") +
+    grey_theme    
+\end{verbatim}
 
+\textbf{Exporting}
+
+You can export the finished plot to your chosen format. Don't use the Export tab in the Plot pan, it will be too low res. Use \texttt{ggsave()}, so you can change arguments \texttt{(width, height, dpi)}
+\begin{verbatim}
+my_plot <- ggplot(percent_items, aes(x = village, y = percent)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    facet_wrap(~ items) +
+    labs(title = "Percent of respondents in each village \n who owned each item",
+         x = "Village",
+         y = "Percent of Respondents") +
+    theme_bw() +
+    theme(axis.text.x = element_text(colour = "grey20", size = 12, angle = 45, 
+    hjust = 0.5, vjust = 0.5),
+          axis.text.y = element_text(colour = "grey20", size = 12),
+          text = element_text(size = 16),
+          plot.title = element_text(hjust = 0.5))
+
+ggsave("fig_output/name_of_file.png", my_plot, width = 15, height = 10)    
+\end{verbatim}
+
+(For above example make sure you have a folder called fig\_output in your cwd.)
 
 %"Intentions, Actions, Results"
 
